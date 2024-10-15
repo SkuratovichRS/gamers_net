@@ -1,14 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response
 import jwt
+from fastapi import APIRouter, Depends, Request, Response
 
-from backend.settings import Settings
+from backend.core.settings import Settings
 from backend.users.dependencies import create_service
 from backend.users.schemas import UserRequestSchema, UserResponseSchema
 from backend.users.security import get_user_id_from_token
 from backend.users.service import Service
-
 
 users_router = APIRouter()
 

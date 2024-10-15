@@ -5,8 +5,9 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 
 from backend.core.database import close_orm, init_orm
+from backend.core.exceptions import http_exception_handler
 from backend.users.routers import users_router
-from backend.users.exceptions import http_exception_handler
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator:

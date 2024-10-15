@@ -1,12 +1,7 @@
-from typing import List
-
 from sqlalchemy import ForeignKey, Integer, String
-from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
-class Base(DeclarativeBase, AsyncAttrs):
-    pass
+from backend.models.base import Base
 
 
 class User(Base):
@@ -16,7 +11,7 @@ class User(Base):
     nickname: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(nullable=False)
-    games: Mapped[List["Game"]] = relationship(secondary="users_games", back_populates="users")
+    games = relationship("Game", secondary="users_games", back_populates="users")
 
 
 class Game(Base):
@@ -24,7 +19,7 @@ class Game(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
-    users: Mapped[List["User"]] = relationship(secondary="users_games", back_populates="games")
+    users = relationship("User", secondary="users_games", back_populates="games")
 
 
 class UserGame(Base):
