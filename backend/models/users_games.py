@@ -3,6 +3,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.models.base import Base
 
+# To avoid circular imports, User, Game, and UserGame models are defined in the same file
+
 
 class User(Base):
     __tablename__ = "users"
