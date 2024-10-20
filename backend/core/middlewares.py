@@ -1,11 +1,12 @@
-from fastapi import Request
+from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 
 from backend.users.security import decode_access_token
 
 protected_routes = [
-    ('GET', '/api/v1/users'),
-    ('POST', '/api/v1/users/logout')
+    ('POST', '/api/v1/users/logout'),
+    ('POST', '/api/v1/games'),
+    ('GET', '/api/v1/games')
 ]
 
 async def auth_middleware(request: Request, call_next):

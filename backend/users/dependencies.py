@@ -1,8 +1,9 @@
 from fastapi import Depends
-from backend.core.dependencies import get_session
-from backend.users.service import Service
-from backend.users.repository import Repository
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from backend.core.dependencies import get_session
+from backend.users.repository import Repository
+from backend.users.service import Service
 
 
 def get_repository(session: AsyncSession = Depends(get_session)) -> Repository:

@@ -2,8 +2,10 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from backend.users.repository import Repository
-from backend.users.schemas import UserRequestSchema, UserResponseSchema, UserLoginSchema
-from backend.users.security import create_access_token, get_password_hash, verify_password
+from backend.users.schemas import (UserLoginSchema, UserRequestSchema,
+                                   UserResponseSchema)
+from backend.users.security import (create_access_token, get_password_hash,
+                                    verify_password)
 
 
 class Service:
