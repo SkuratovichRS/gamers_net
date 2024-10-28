@@ -1,5 +1,5 @@
 import { logout, checkAuth, getAllUsers } from '../api/auth.js';
-import { getUserGames, addUserGame } from '../api/games.js';
+import { getUserGames, addUserGame, getAllGames } from '../api/games.js';
 import { showNotification } from '../components/notification.js';
 
 async function checkAuthentication() {
@@ -36,14 +36,8 @@ async function fetchUsers() {
 
 async function fetchUserGames() {
     try {
-        const response = await getUserGames();
-        
-        if (response.ok) {
-            const games = await response.json();
-            displayGames(games);
-        } else {
-            showNotification('Failed to fetch games');
-        }
+        const games = await getUserGames();
+        displayGames(games);
     } catch (error) {
         console.error('Error:', error);
         showNotification('Error fetching games');
@@ -82,33 +76,80 @@ function displayGames(games) {
     document.getElementById('game-form').style.display = 'none';
 }
 
-async function handleAddGame() {
-    const gameNameInput = document.getElementById('game-name');
-    const gameName = gameNameInput.value.trim();
+// Обновляем функцию loadAvailableGames
+async function loadAvailableGames() {
+    try {
+        const games = await getAllGames();
+        console.log('Games data:', games);
+        
+        const gameSelect = document.getElementById('game-name');
+        if (!gameSelect) {
+            console.error('Game select element not found!');
+            return;
+        }
+        
+        gameSelect.innerHTML = '<option value="">Select a game</option>';
+        
+        games.forEach(game => {
+            console.log('Adding game:', game);
+            const option = document.createElement('option');
+            option.value = game.id;
+            option.textContent = game.name;
+            gameSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading games:', error);
+        showNotification('Error loading available games');
+    }
+}
+
+function toggleGameForm() {
+    const gameForm = document.getElementById('game-form');
+    const usersContainer = document.getElementById('users-container');
+    const gamesContainer = document.getElementById('games-container');
+    
+    if (gameForm.style.display === 'none' || gameForm.style.display === '') {
+        gameForm.style.display = 'block';
+        loadAvailableGames();
+        usersContainer.style.display = 'none';
+        gamesContainer.style.display = 'none';
+    } else {
+        gameForm.style.display = 'none';
+    }
+}
+
+// Обновляем функцию handleAddGame
+async function handleAddGame(event) {
+    event?.preventDefault();
+    
+    const gameSelect = document.getElementById('game-name');
+    const selectedOption = gameSelect.options[gameSelect.selectedIndex];
+    const gameName = selectedOption.textContent;
     const errorElement = document.getElementById('game-error');
     
+    errorElement.textContent = '';
     errorElement.style.display = 'none';
     
     if (!gameName) {
-        errorElement.textContent = 'Please enter a game name';
+        errorElement.textContent = 'Please select a game';
         errorElement.style.display = 'block';
         return;
     }
 
     try {
-        const response = await addUserGame(gameName);
+        console.log('Sending game name:', gameName);
+        const result = await addUserGame(gameName);
+        console.log('Server response:', result);
         
-        if (response.ok) {
-            showNotification('Game added successfully!');
-            gameNameInput.value = '';
-            await fetchUserGames();
-        } else {
-            const data = await response.json();
-            handleAddGameError(response.status, data, errorElement);
-        }
+        showNotification('Game added successfully!');
+        gameSelect.value = '';
+        await fetchUserGames();
+        toggleGameForm();
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Error adding game');
+        errorElement.textContent = error.message;
+        errorElement.style.display = 'block';
+        showNotification(error.message);
     }
 }
 
@@ -127,25 +168,16 @@ function initializeEventListeners() {
     document.getElementById('show-users-btn').addEventListener('click', fetchUsers);
     document.getElementById('show-games-btn').addEventListener('click', fetchUserGames);
     document.getElementById('add-game-btn').addEventListener('click', toggleGameForm);
-    document.getElementById('submit-game-btn').addEventListener('click', handleAddGame);
+    document.getElementById('submit-game-btn').addEventListener('click', (e) => handleAddGame(e));
     document.getElementById('logout-btn').addEventListener('click', handleLogout);
     
-    document.getElementById('game-name').addEventListener('keypress', (e) => {
+    const gameNameSelect = document.getElementById('game-name');
+    gameNameSelect.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            handleAddGame();
+            handleAddGame(e);
         }
     });
-}
-
-function toggleGameForm() {
-    const gameForm = document.getElementById('game-form');
-    const usersContainer = document.getElementById('users-container');
-    const gamesContainer = document.getElementById('games-container');
-    
-    gameForm.style.display = gameForm.style.display === 'none' ? 'block' : 'none';
-    usersContainer.style.display = 'none';
-    gamesContainer.style.display = 'none';
 }
 
 async function handleLogout() {

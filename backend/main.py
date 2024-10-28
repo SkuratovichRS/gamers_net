@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.core.config import CORS_CONFIG
+from backend.core.settings import Settings
 from backend.core.database import DbSession, close_orm, init_orm
 from backend.core.exceptions import http_exception_handler
 from backend.core.middlewares import auth_middleware
@@ -45,4 +46,4 @@ for router in routers:
     app.include_router(router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=Settings.BACKEND_HOST, port=int(Settings.BACKEND_PORT))

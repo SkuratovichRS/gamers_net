@@ -9,10 +9,20 @@ async function handleRequest(url, options) {
                 ...options.headers
             }
         });
-        return response;
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            if (data.detail === 'Pair user_id and game_id already exists') {
+                throw new Error('You already have this game');
+            }
+            throw new Error(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail));
+        }
+        
+        return data;
     } catch (error) {
-        console.error('Network error:', error);
-        throw new Error('Network error occurred. Please check your connection.');
+        console.error('Request error:', error);
+        throw new Error(error.message || 'Network error occurred');
     }
 }
 
@@ -28,5 +38,12 @@ export async function addUserGame(gameName) {
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({ name: gameName })
+    });
+}
+
+export async function getAllGames() {
+    return handleRequest(`${API_URL}/games/all`, {
+        method: 'GET',
+        credentials: 'include'
     });
 }

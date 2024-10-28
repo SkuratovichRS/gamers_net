@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.games.exceptions import GameNotFound
 from backend.games.repository import Repository
-from backend.games.schemas import (CreateUserGameResponseSchema,
+from backend.games.schemas import (CreateUserGameResponseSchema, GetGameResponseSchema,
                                    GetUserGamesResponseSchema,
                                    UserGameRequestSchema)
 
@@ -32,4 +32,8 @@ class Service:
 
     async def add_games(self, games_data: list[dict]) -> None:
         await self.repository.add_games(games_data)
+
+    async def get_all_games(self) -> list[GetGameResponseSchema]:
+        games = await self.repository.get_all_games()
+        return [GetGameResponseSchema.model_validate(game, from_attributes=True) for game in games]
 

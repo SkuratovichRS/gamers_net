@@ -16,3 +16,8 @@ class GetUserGamesResponseSchema(BaseModel):
     game_id: int
     user_nickname: str
     game_name: str
+
+class GetGameResponseSchema(BaseModel):
+    id: int
+    name: str
+

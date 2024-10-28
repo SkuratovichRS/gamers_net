@@ -43,3 +43,7 @@ class Repository:
         if new_games:
             self._session.add_all(new_games)
             await self._session.commit()
+
+    async def get_all_games(self) -> list[Game]:
+        result = await self._session.execute(select(Game))
+        return result.scalars().all()
