@@ -13,3 +13,4 @@ class Settings:
     POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
     SECRET_KEY = os.getenv('SECRET_KEY')
     ALGORITHM = os.getenv('ALGORITHM')
+

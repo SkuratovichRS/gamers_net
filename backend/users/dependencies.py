@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,3 +13,6 @@ def get_repository(session: AsyncSession = Depends(get_session)) -> Repository:
 
 def get_service(repo: Repository = Depends(get_repository)) -> Service:
     return Service(repo)
+
+
+ServiceDep = Annotated[Service, Depends(get_service)]
